@@ -1,6 +1,6 @@
 package com.example.bibliothequeapp;
 
-import android.content.Intent; // <- CET IMPORT ÉTAIT MANQUANT !
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +15,11 @@ import java.util.ArrayList;
 public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHolder> {
 
     private ArrayList<Livre> listeLivres;
+    private MainActivity mainActivity; // Référence vers l'activité principale
 
-    public LivreAdapter(ArrayList<Livre> listeLivres) {
+    public LivreAdapter(ArrayList<Livre> listeLivres, MainActivity mainActivity) {
         this.listeLivres = listeLivres;
+        this.mainActivity = mainActivity;
     }
 
     @NonNull
@@ -37,22 +39,19 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
 
         if (livre.isDisponible()) {
             holder.tvDisponibilite.setText("Disponible");
-            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#2E7D32"));
+            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#2E7D32")); // Vert
         } else {
             holder.tvDisponibilite.setText("Indisponible");
-            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828"));
+            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828")); // Rouge
         }
 
-        // Étape 5 : On écoute le clic sur la ligne entière (itemView)
+        // Étape 5 : Gestion du clic sur la ligne
         holder.itemView.setOnClickListener(v -> {
-            // 1. Création de l'Intent pour aller vers DetailActivity
             Intent intent = new Intent(v.getContext(), DetailActivity.class);
-
-            // 2. On glisse l'objet livre sélectionné dans l'Intent
             intent.putExtra("livre", livre);
 
-            // 3. On démarre la nouvelle activité
-            v.getContext().startActivity(intent);
+            // Utilisation de la méthode de la MainActivity pour un lancement avec suivi
+            mainActivity.lancerDetailActivity(intent, position);
         });
     }
 

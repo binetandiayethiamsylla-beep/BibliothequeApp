@@ -1,7 +1,11 @@
 package com.example.bibliothequeapp;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +17,20 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewLivres;
     private LivreAdapter livreAdapter;
     private ArrayList<Livre> listeLivres;
+    private int positionLivreModifie = -1;
+
+    private final ActivityResultLauncher<Intent> detailActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Livre livreModifie = (Livre) result.getData().getSerializableExtra("livre_modifie");
+                    if (livreModifie != null && positionLivreModifie != -1) {
+                        listeLivres.set(positionLivreModifie, livreModifie);
+                        livreAdapter.notifyItemChanged(positionLivreModifie);
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +50,13 @@ public class MainActivity extends AppCompatActivity {
         listeLivres.add(new Livre(8, "Sous l'orage", "Seydou Badian", "9782708707691", true));
 
         recyclerViewLivres.setLayoutManager(new LinearLayoutManager(this));
-        livreAdapter = new LivreAdapter(listeLivres);
+
+        livreAdapter = new LivreAdapter(listeLivres, this);
         recyclerViewLivres.setAdapter(livreAdapter);
+    }
+
+    public void lancerDetailActivity(Intent intent, int position) {
+        this.positionLivreModifie = position;
+        detailActivityLauncher.launch(intent);
     }
 }
