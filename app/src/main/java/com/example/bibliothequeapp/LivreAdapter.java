@@ -1,5 +1,6 @@
 package com.example.bibliothequeapp;
 
+import android.content.Intent; // <- CET IMPORT ÉTAIT MANQUANT !
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +42,18 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
             holder.tvDisponibilite.setText("Indisponible");
             holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828"));
         }
+
+        // Étape 5 : On écoute le clic sur la ligne entière (itemView)
+        holder.itemView.setOnClickListener(v -> {
+            // 1. Création de l'Intent pour aller vers DetailActivity
+            Intent intent = new Intent(v.getContext(), DetailActivity.class);
+
+            // 2. On glisse l'objet livre sélectionné dans l'Intent
+            intent.putExtra("livre", livre);
+
+            // 3. On démarre la nouvelle activité
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
