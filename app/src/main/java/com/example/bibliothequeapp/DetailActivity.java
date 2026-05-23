@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
@@ -11,8 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class DetailActivity extends AppCompatActivity {
 
+    private static final int REQUEST_EDIT_LIVRE = 200;
+
     private TextView tvTitre, tvAuteur, tvIsbn, tvDisponibilite;
+    private Button btnModifier;
     private Livre livre;
+    private int position = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,49 +33,69 @@ public class DetailActivity extends AppCompatActivity {
         tvAuteur = findViewById(R.id.tvAuteur);
         tvIsbn = findViewById(R.id.tvIsbn);
         tvDisponibilite = findViewById(R.id.tvDisponibilite);
+        btnModifier = findViewById(R.id.btnModifier);
 
         livre = (Livre) getIntent().getSerializableExtra("livre");
+        position = getIntent().getIntExtra("position", -1);
 
         if (livre != null) {
             tvTitre.setText(livre.getTitre());
             tvAuteur.setText(livre.getAuteur());
             tvIsbn.setText(livre.getIsbn());
-
-            // Applique le style initial
             mettreAJourDesignBadge();
 
-            // BONUS : Cliquer sur le badge change le statut en temps réel !
             tvDisponibilite.setOnClickListener(v -> {
-                // Inverse la valeur booléenne
                 livre.setDisponible(!livre.isDisponible());
-
-                // Actualise immédiatement les couleurs à l'écran
                 mettreAJourDesignBadge();
-
-                // Prépare le paquet retour pour la MainActivity
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("livre_modifie", livre);
                 setResult(Activity.RESULT_OK, resultIntent);
-
                 Toast.makeText(this, "Statut du livre mis à jour !", Toast.LENGTH_SHORT).show();
+            });
+
+            // Bouton Modifier
+            btnModifier.setOnClickListener(v -> {
+                Intent intent = new Intent(DetailActivity.this, AddEditActivity.class);
+                intent.putExtra(AddEditActivity.EXTRA_MODE, AddEditActivity.MODE_EDIT);
+                intent.putExtra(AddEditActivity.EXTRA_LIVRE, livre);
+                intent.putExtra(AddEditActivity.EXTRA_POSITION, position);
+                startActivityForResult(intent, REQUEST_EDIT_LIVRE);
             });
         }
     }
 
-    // Petite méthode interne pour éviter la répétition du code de couleur
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_EDIT_LIVRE && resultCode == RESULT_OK && data != null) {
+            livre = (Livre) data.getSerializableExtra(AddEditActivity.EXTRA_LIVRE);
+            if (livre != null) {
+                tvTitre.setText(livre.getTitre());
+                tvAuteur.setText(livre.getAuteur());
+                tvIsbn.setText(livre.getIsbn());
+                mettreAJourDesignBadge();
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("livre_modifie", livre);
+                resultIntent.putExtra("position", position);
+                setResult(RESULT_OK, resultIntent);
+                Toast.makeText(this, "Livre modifié avec succès !", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void mettreAJourDesignBadge() {
         if (livre.isDisponible()) {
             tvDisponibilite.setText("DISPONIBLE EN RAYON");
-            tvDisponibilite.setBackgroundColor(Color.parseColor("#2E7D32")); // Vert moderne
+            tvDisponibilite.setBackgroundResource(R.drawable.badge_disponible);
         } else {
             tvDisponibilite.setText("EMPRUNTÉ / INDISPONIBLE");
-            tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828")); // Rouge moderne
+            tvDisponibilite.setBackgroundResource(R.drawable.badge_indisponible);
         }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish(); // Ferme et retourne à la liste
+        finish();
         return true;
     }
 }
