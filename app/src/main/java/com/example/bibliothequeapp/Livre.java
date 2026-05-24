@@ -1,9 +1,16 @@
 package com.example.bibliothequeapp;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity(tableName = "livres")
 public class Livre implements Serializable {
+
+    @PrimaryKey(autoGenerate = true)
     private int id;
+
     private String titre;
     private String auteur;
     private String isbn;
@@ -17,15 +24,18 @@ public class Livre implements Serializable {
         this.disponible = disponible;
     }
 
-    public int getId()           { return id; }
-    public String getTitre()     { return titre; }
-    public String getAuteur()    { return auteur; }
-    public String getIsbn()      { return isbn; }
-    public boolean isDisponible(){ return disponible; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setId(int id)                  { this.id = id; }
-    public void setTitre(String titre)         { this.titre = titre; }
-    public void setAuteur(String auteur)       { this.auteur = auteur; }
-    public void setIsbn(String isbn)           { this.isbn = isbn; }
-    public void setDisponible(boolean d)       { this.disponible = d; }
+    public String getTitre() { return titre; }
+    public void setTitre(String titre) { this.titre = titre; }
+
+    public String getAuteur() { return auteur; }
+    public void setAuteur(String auteur) { this.auteur = auteur; }
+
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+
+    public boolean isDisponible() { return disponible; }
+    public void setDisponible(boolean disponible) { this.disponible = disponible; }
 }

@@ -15,7 +15,6 @@ public class AddEditActivity extends AppCompatActivity {
 
     public static final String EXTRA_MODE = "MODE";
     public static final String EXTRA_LIVRE = "LIVRE";
-    public static final String EXTRA_POSITION = "POSITION";
 
     public static final String MODE_ADD = "ADD";
     public static final String MODE_EDIT = "EDIT";
@@ -29,7 +28,6 @@ public class AddEditActivity extends AppCompatActivity {
 
     private String mode;
     private Livre livreAModifier;
-    private int positionLivre = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +52,6 @@ public class AddEditActivity extends AppCompatActivity {
         if (MODE_EDIT.equals(mode)) {
             tvTitreFormulaire.setText("Modifier le livre");
             livreAModifier = (Livre) intent.getSerializableExtra(EXTRA_LIVRE);
-            positionLivre = intent.getIntExtra(EXTRA_POSITION, -1);
 
             if (livreAModifier != null) {
                 etTitre.setText(livreAModifier.getTitre());
@@ -91,7 +88,6 @@ public class AddEditActivity extends AppCompatActivity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(EXTRA_MODE, mode);
         resultIntent.putExtra(EXTRA_LIVRE, livre);
-        resultIntent.putExtra(EXTRA_POSITION, positionLivre);
 
         setResult(RESULT_OK, resultIntent);
         finish();

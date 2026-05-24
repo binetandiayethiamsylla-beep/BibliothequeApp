@@ -4,20 +4,27 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHolder> {
 
-    private ArrayList<Livre> listeLivres;
+    public interface OnLivreClickListener {
+        void onLivreClick(Livre livre);
+        void onLivreLongClick(Livre livre, int position);
+    }
 
-    public LivreAdapter(ArrayList<Livre> listeLivres) {
+    private List<Livre> listeLivres;
+    private OnLivreClickListener listener;
+
+    public LivreAdapter(List<Livre> listeLivres, OnLivreClickListener listener) {
         this.listeLivres = listeLivres;
+        this.listener = listener;
     }
 
     @NonNull
@@ -37,28 +44,46 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
         holder.tvIsbnLivre.setText("ISBN : " + livre.getIsbn());
 
         if (livre.isDisponible()) {
-            holder.tvDisponibilite.setText("Disponible");
-            holder.tvDisponibilite.setBackgroundResource(R.drawable.badge_disponible);
+            holder.tvDisponibilite.setText("✅ Disponible");
+            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#2E7D32"));
+            holder.tvDisponibilite.setTextColor(Color.parseColor("#FFFFFF"));
+            holder.tvDisponibilite.setPadding(20, 10, 20, 10);
         } else {
-            holder.tvDisponibilite.setText("Indisponible");
-            holder.tvDisponibilite.setBackgroundResource(R.drawable.badge_indisponible);
+            holder.tvDisponibilite.setText("❌ Indisponible");
+            holder.tvDisponibilite.setBackgroundColor(Color.parseColor("#C62828"));
+            holder.tvDisponibilite.setTextColor(Color.parseColor("#FFFFFF"));
+            holder.tvDisponibilite.setPadding(20, 10, 20, 10);
         }
 
-        // Clic simple : ouvrir le détail du livre
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), DetailActivity.class);
-            intent.putExtra("livre", livre);
-            intent.putExtra("position", holder.getAdapterPosition());
-            v.getContext().startActivity(intent);
+            if (listener != null) {
+                listener.onLivreClick(livre);
+            }
         });
 
-        // Clic long : ouvrir le formulaire en mode modification
         holder.itemView.setOnLongClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), AddEditActivity.class);
-            intent.putExtra(AddEditActivity.EXTRA_MODE, AddEditActivity.MODE_EDIT);
-            intent.putExtra(AddEditActivity.EXTRA_LIVRE, livre);
-            intent.putExtra(AddEditActivity.EXTRA_POSITION, holder.getAdapterPosition());
+            if (listener != null) {
+                int currentPosition = holder.getAdapterPosition();
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    listener.onLivreLongClick(livre, currentPosition);
+                }
+            }
             return true;
+        });
+
+        holder.btnModifierItem.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onLivreClick(livre);
+            }
+        });
+
+        holder.btnSupprimerItem.setOnClickListener(v -> {
+            if (listener != null) {
+                int currentPosition = holder.getAdapterPosition();
+                if (currentPosition != RecyclerView.NO_POSITION) {
+                    listener.onLivreLongClick(livre, currentPosition);
+                }
+            }
         });
     }
 
@@ -67,12 +92,39 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
         return listeLivres.size();
     }
 
+    public void ajouterLivre(Livre livre) {
+        listeLivres.add(0, livre);
+        notifyItemInserted(0);
+    }
+
+    public void modifierLivre(Livre livre) {
+        for (int i = 0; i < listeLivres.size(); i++) {
+            if (listeLivres.get(i).getId() == livre.getId()) {
+                listeLivres.set(i, livre);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
+    public void supprimerLivre(Livre livre) {
+        for (int i = 0; i < listeLivres.size(); i++) {
+            if (listeLivres.get(i).getId() == livre.getId()) {
+                listeLivres.remove(i);
+                notifyItemRemoved(i);
+                break;
+            }
+        }
+    }
+
     public static class LivreViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvTitreLivre;
         TextView tvAuteurLivre;
         TextView tvIsbnLivre;
         TextView tvDisponibilite;
+        ImageButton btnModifierItem;
+        ImageButton btnSupprimerItem;
 
         public LivreViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,6 +132,8 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
             tvAuteurLivre = itemView.findViewById(R.id.tvAuteurLivre);
             tvIsbnLivre = itemView.findViewById(R.id.tvIsbnLivre);
             tvDisponibilite = itemView.findViewById(R.id.tvDisponibilite);
+            btnModifierItem = itemView.findViewById(R.id.btnModifierItem);
+            btnSupprimerItem = itemView.findViewById(R.id.btnSupprimerItem);
         }
     }
 }
