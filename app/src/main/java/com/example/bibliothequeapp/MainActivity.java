@@ -48,15 +48,31 @@ public class MainActivity extends AppCompatActivity {
 
         listeLivres = new ArrayList<>();
 
+        // CORRECTION : l'interface implémente maintenant les 4 callbacks
         livreAdapter = new LivreAdapter(listeLivres, new LivreAdapter.OnLivreClickListener() {
+
             @Override
             public void onLivreClick(Livre livre) {
+                // Clic simple → ouvrir le détail
                 ouvrirDetailLivre(livre);
             }
 
             @Override
             public void onLivreLongClick(Livre livre, int position) {
+                // Clic long → menu Modifier / Supprimer (comme avant)
                 afficherOptionsLivre(livre);
+            }
+
+            @Override
+            public void onLivreModifierClick(Livre livre) {
+                // Icône Modifier → formulaire de modification directement ✅
+                ouvrirFormulaireModification(livre);
+            }
+
+            @Override
+            public void onLivreSupprimerClick(Livre livre) {
+                // Icône Supprimer → confirmation de suppression directement ✅
+                confirmerSuppression(livre);
             }
         });
 

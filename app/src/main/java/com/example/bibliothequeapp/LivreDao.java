@@ -25,4 +25,9 @@ public interface LivreDao {
 
     @Query("DELETE FROM livres")
     void deleteAll();
+
+    // BONUS : recherche par titre avec LIKE
+    // Le % autour de :titre permet de chercher n'importe où dans le titre
+    @Query("SELECT * FROM livres WHERE titre LIKE '%' || :titre || '%' ORDER BY id DESC")
+    List<Livre> searchByTitre(String titre);
 }

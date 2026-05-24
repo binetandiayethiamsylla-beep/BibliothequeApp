@@ -14,9 +14,12 @@ import java.util.List;
 
 public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHolder> {
 
+    // CORRECTION : l'interface a maintenant 4 callbacks clairs et distincts
     public interface OnLivreClickListener {
-        void onLivreClick(Livre livre);
-        void onLivreLongClick(Livre livre, int position);
+        void onLivreClick(Livre livre);           // clic simple → ouvrir détail
+        void onLivreLongClick(Livre livre, int position); // clic long → menu options
+        void onLivreModifierClick(Livre livre);   // icône modifier → formulaire directement
+        void onLivreSupprimerClick(Livre livre);  // icône supprimer → confirmation directement
     }
 
     private List<Livre> listeLivres;
@@ -55,12 +58,14 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
             holder.tvDisponibilite.setPadding(20, 10, 20, 10);
         }
 
+        // Clic simple sur la carte → ouvrir le détail
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onLivreClick(livre);
             }
         });
 
+        // Clic long sur la carte → menu Modifier / Supprimer
         holder.itemView.setOnLongClickListener(v -> {
             if (listener != null) {
                 int currentPosition = holder.getAdapterPosition();
@@ -71,18 +76,17 @@ public class LivreAdapter extends RecyclerView.Adapter<LivreAdapter.LivreViewHol
             return true;
         });
 
+        // CORRECTION : icône Modifier → ouvre directement le formulaire de modification
         holder.btnModifierItem.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onLivreClick(livre);
+                listener.onLivreModifierClick(livre); // ✅ callback dédié
             }
         });
 
+        // CORRECTION : icône Supprimer → affiche directement la confirmation de suppression
         holder.btnSupprimerItem.setOnClickListener(v -> {
             if (listener != null) {
-                int currentPosition = holder.getAdapterPosition();
-                if (currentPosition != RecyclerView.NO_POSITION) {
-                    listener.onLivreLongClick(livre, currentPosition);
-                }
+                listener.onLivreSupprimerClick(livre); // ✅ callback dédié
             }
         });
     }

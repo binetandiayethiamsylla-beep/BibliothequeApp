@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class AddEditActivity extends AppCompatActivity {
 
@@ -19,10 +20,12 @@ public class AddEditActivity extends AppCompatActivity {
     public static final String MODE_ADD = "ADD";
     public static final String MODE_EDIT = "EDIT";
 
-    private EditText etTitre;
-    private EditText etAuteur;
-    private EditText etIsbn;
-    private Switch switchDisponible;
+    // CORRECTION : TextInputEditText à la place de EditText
+    //              SwitchMaterial à la place de Switch
+    private TextInputEditText etTitre;
+    private TextInputEditText etAuteur;
+    private TextInputEditText etIsbn;
+    private SwitchMaterial switchDisponible;
     private Button btnEnregistrer;
     private TextView tvTitreFormulaire;
 
@@ -68,9 +71,9 @@ public class AddEditActivity extends AppCompatActivity {
     }
 
     private void enregistrerLivre() {
-        String titre = etTitre.getText().toString().trim();
-        String auteur = etAuteur.getText().toString().trim();
-        String isbn = etIsbn.getText().toString().trim();
+        String titre = etTitre.getText() != null ? etTitre.getText().toString().trim() : "";
+        String auteur = etAuteur.getText() != null ? etAuteur.getText().toString().trim() : "";
+        String isbn = etIsbn.getText() != null ? etIsbn.getText().toString().trim() : "";
         boolean disponible = switchDisponible.isChecked();
 
         if (!validerFormulaire(titre, auteur, isbn)) {
@@ -80,9 +83,9 @@ public class AddEditActivity extends AppCompatActivity {
         Livre livre;
 
         if (MODE_EDIT.equals(mode) && livreAModifier != null) {
-            livre = new Livre(livreAModifier.getId(), titre, auteur, isbn, disponible);
+            livre = new Livre(livreAModifier.getId(), titre, auteur, isbn, disponible, livreAModifier.getAnneePublication());
         } else {
-            livre = new Livre(0, titre, auteur, isbn, disponible);
+            livre = new Livre(0, titre, auteur, isbn, disponible, 0);
         }
 
         Intent resultIntent = new Intent();

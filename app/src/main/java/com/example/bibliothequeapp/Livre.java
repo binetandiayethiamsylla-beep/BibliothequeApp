@@ -16,12 +16,16 @@ public class Livre implements Serializable {
     private String isbn;
     private boolean disponible;
 
-    public Livre(int id, String titre, String auteur, String isbn, boolean disponible) {
+    // BONUS : nouveau champ année de publication
+    private int anneePublication;
+
+    public Livre(int id, String titre, String auteur, String isbn, boolean disponible, int anneePublication) {
         this.id = id;
         this.titre = titre;
         this.auteur = auteur;
         this.isbn = isbn;
         this.disponible = disponible;
+        this.anneePublication = anneePublication;
     }
 
     public int getId() { return id; }
@@ -38,4 +42,7 @@ public class Livre implements Serializable {
 
     public boolean isDisponible() { return disponible; }
     public void setDisponible(boolean disponible) { this.disponible = disponible; }
+
+    public int getAnneePublication() { return anneePublication; }
+    public void setAnneePublication(int anneePublication) { this.anneePublication = anneePublication; }
 }
